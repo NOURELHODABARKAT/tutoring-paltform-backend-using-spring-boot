@@ -2,8 +2,8 @@ package com.nour.demo.service;
 
 import org.springframework.stereotype.Service;
 
-import com.example.tutor.demo.dto.TutorProfileDTO;
-import com.example.tutor.demo.repository.TutorRepository;
+import com.nour.demo.dto.TutorProfileDTO;
+import com.nour.demo.repository.TutorRepository;
 
 @Service
 public class TutorService {

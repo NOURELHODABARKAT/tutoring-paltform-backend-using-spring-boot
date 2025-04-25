@@ -1,6 +1,6 @@
 package com.nour.demo.config;
-
-import com.example.tutor.demo.security.JwtFilter;
+import com.nour.demo.security.JwtFilter;
+//import com.example.tutor.demo.security.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;

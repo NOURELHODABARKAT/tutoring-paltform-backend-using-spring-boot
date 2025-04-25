@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.example.tutor.demo.dto.ReviewDTO;
-import com.example.tutor.demo.repository.ReviewRepository;
+import com.nour.demo.dto.ReviewDTO;
+import com.nour.demo.repository.ReviewRepository;
 
 @Service
 public class ReviewService {

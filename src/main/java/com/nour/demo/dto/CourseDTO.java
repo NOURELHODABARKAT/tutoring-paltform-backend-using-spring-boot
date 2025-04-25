@@ -1,7 +1,8 @@
 package com.nour.demo.dto;
 
 import java.math.BigDecimal;
-import com.nour.demo.model.User; 
+import com.nour.demo.model.User;
+
 public class CourseDTO {
     private String title;
     private String description;
@@ -10,6 +11,7 @@ public class CourseDTO {
     private BigDecimal price;
     private Integer duration;
     private User tutor;
+
     // Getters and Setters
 
     public String getTitle() {
@@ -46,4 +48,25 @@ public class CourseDTO {
 
     public BigDecimal getPrice() {
         return price;
-    } }
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
+    public User getTutor() {
+        return tutor;
+    }
+
+    public void setTutor(User tutor) {
+        this.tutor = tutor;
+    }
+}

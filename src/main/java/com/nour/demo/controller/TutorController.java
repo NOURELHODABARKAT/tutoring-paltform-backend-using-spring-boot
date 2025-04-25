@@ -21,7 +21,7 @@ public class TutorController {
 
     @GetMapping("/{tutorId}/profile")
     public ResponseEntity<TutorProfileDTO> getTutorProfile(@PathVariable int tutorId) {
-        TutorProfileDTO profile = tutorService.getTutorProfile(tutorId);
+        TutorProfileDTO profile = (TutorProfileDTO) tutorService.getTutorProfile(tutorId);
         return ResponseEntity.ok(profile);
     }
 }
