@@ -4,7 +4,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.tutor.demo.model.User;
+import com.nour.demo.model.User;
 
 /**
  * Repository interface for accessing user data from the database.
