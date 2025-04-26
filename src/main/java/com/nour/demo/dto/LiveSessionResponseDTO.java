@@ -1,46 +1,22 @@
-package com.nour.demo.model;
+package com.nour.demo.dto;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 import lombok.Builder;
 
 @Builder
-@Entity
-public class LiveSession {
 
-    // No explicit no-argument constructor is needed as @Builder will handle object creation.
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class LiveSessionResponseDTO {
     private Long id;
-
     private String title;
-    
     private String description;
-    
     private LocalDateTime startTime;
-    
     private Integer durationInMinutes;
-    
     private Integer availableSeats;
-    
     private String meetingLink;
-    @ManyToOne
-    @JoinColumn(name = "tutor_id")
-    private User tutor; 
-    @ManyToOne
-    @JoinColumn(name = "course_id")
-    private courese course; 
-    @ManyToMany
-    @JoinTable(
-        name = "live_session_students",
-        joinColumns = @JoinColumn(name = "session_id"),
-        inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    @Builder.Default
-    private final Set<User> enrolledStudents = new HashSet<>();
+    private Long tutorId;
+    private Long courseId;
+
+    // ----- Getters & Setters -----
     public Long getId() {
         return id;
     }
@@ -77,7 +53,7 @@ public class LiveSession {
         return durationInMinutes;
     }
 
-    public void setDurationInMinutes(Integer durationInMinutes) {
+    public void  setDurationInMinutes(Integer durationInMinutes) {
         this.durationInMinutes = durationInMinutes;
     }
 
@@ -97,25 +73,19 @@ public class LiveSession {
         this.meetingLink = meetingLink;
     }
 
-    public User getTutor() {
-        return tutor;
+    public Long getTutorId() {
+        return tutorId;
     }
 
-    public void setTutor(User tutor) {
-        this.tutor = tutor;
+    public void setTutorId(Long tutorId) {
+        this.tutorId = tutorId;
     }
 
-    public courese getCourse() {
-        return course;
+    public Long getCourseId() {
+        return courseId;
     }
 
-    public void setCourse(courese course) {
-        this.course = course;
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
     }
-
-    public Set<User> getEnrolledStudents() {
-        return enrolledStudents;
-    }
-
-    // Removed the setter for enrolledStudents as the field is final and cannot be reassigned.
 }

@@ -1,6 +1,6 @@
 package com.nour.demo.dto;
 import java.time.LocalDateTime;
-
+ 
 public class LiveSessionCreationDTO {
     
     private String title;
@@ -10,6 +10,8 @@ public class LiveSessionCreationDTO {
     private Integer availableSeats;
     private String meetingLink;
     private Long courseId;
+    private Long tutorId;
+    private int duration;
     public String getTitle() {
         return title;
     }
@@ -65,4 +67,18 @@ public class LiveSessionCreationDTO {
     public void setCourseId(Long courseId) {
         this.courseId = courseId;
     }
+    public Long getTutorId() {
+        return tutorId;
+    }
+
+    public void setTutorId(Long tutorId) {
+        this.tutorId = tutorId;
+    }  public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
 }

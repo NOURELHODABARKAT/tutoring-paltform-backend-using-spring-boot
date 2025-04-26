@@ -1,69 +1,88 @@
 package com.nour.demo.security;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import com.nour.demo.security.JwtConfig;
+import java.io.IOException;
+import java.util.ArrayList;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    @Value("${jwt.secret}")
-    private String jwtSecret;
+    private final JwtConfig jwtConfig;
+
+    public JwtFilter(JwtConfig jwtConfig) {
+        this.jwtConfig = jwtConfig;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-                                    throws ServletException, IOException {
+    protected void doFilterInternal(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        FilterChain filterChain
+    ) throws ServletException, IOException {
+        
+        String authHeader = request.getHeader("Authorization");
 
-        String header = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
 
-        if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
             try {
-                Claims claims = Jwts.parserBuilder()
-                        .setSigningKey(jwtSecret.getBytes())
-                        .build()
-                        .parseClaimsJws(token)
-                        .getBody();
+                if (validateToken(token)) {
+                    String username = extractUsername(token);
 
-                String email = claims.getSubject();
+                    UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                            username,
+                            null,
+                            new ArrayList<>()
+                        );
 
-                @SuppressWarnings("unchecked")
-                List<String> roles = claims.get("roles", List.class);
+                    authentication.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
 
-                List<SimpleGrantedAuthority> authorities = roles.stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                        .toList();
-
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(email, null, authorities);
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            } catch (io.jsonwebtoken.security.SecurityException | io.jsonwebtoken.MalformedJwtException |
-                     io.jsonwebtoken.ExpiredJwtException | io.jsonwebtoken.UnsupportedJwtException |
-                     IllegalArgumentException e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (Exception e) {
+                logger.error("JWT Validation Error: " + e.getMessage());
             }
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                .setSigningKey(jwtConfig.getSecretKey().getBytes())
+                .build()
+                .parseClaimsJws(token);
+            return true;
+        } catch (SignatureException e) {
+            logger.error("Invalid JWT Signature: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("General JWT Error: " + e.getMessage());
+        }
+        return false;
+    }
+
+    private String extractUsername(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(jwtConfig.getSecretKey().getBytes())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
     }
 }

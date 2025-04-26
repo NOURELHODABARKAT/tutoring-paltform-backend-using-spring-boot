@@ -1,5 +1,6 @@
 package com.nour.demo.dto;
-import com.nour.demo.config.JwtConfig;
+import com.nour.demo.security.JwtConfig;
+
 import lombok.Getter;
 import lombok.Setter;
 @Getter
