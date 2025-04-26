@@ -29,7 +29,7 @@ public class CourseService {
         this.userRepository = userRepository;
     }
 
-    public courese createCourse(CourseDTO dto, User currentUser) {
+    public courese createCourse(CourseDTO dto, User currentUser) throws AccessDeniedException {
        
         if (currentUser.getRoles().stream().noneMatch(role -> "TUTOR".equals(role.toString()))) {
             throw new AccessDeniedException("Only tutors can publish courses");
@@ -118,6 +118,6 @@ public class CourseService {
         if (tutorName == null) {
             tutorName = "";
         }
-        return courseRepository.searchCourses(tutorName, minPrice, maxPrice, category, subjectStartsWith, duration);
+        return courseRepository.searchCourses(tutorName, "", minPrice, maxPrice, category, subjectStartsWith, duration);
     }
 }
