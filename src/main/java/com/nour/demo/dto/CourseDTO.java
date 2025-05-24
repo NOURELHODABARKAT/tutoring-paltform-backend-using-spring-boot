@@ -1,7 +1,8 @@
 package com.nour.demo.dto;
 
 import java.math.BigDecimal;
-import com.nour.demo.model.User;
+
+import com.nour.demo.model.User.User;
 
 public class CourseDTO {
     private String title;

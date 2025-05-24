@@ -1,5 +1,8 @@
 package com.nour.demo.dto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -30,7 +33,7 @@ public class UserRegistrationDTO {
 
     @NotBlank(message = "Date of birth is required")
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Date of birth must be in YYYY-MM-DD format")
-    private String dateOfBirth;
+    private  LocalDateTime birthdate;
 
     // Getters and Setters
 
@@ -74,11 +77,11 @@ public class UserRegistrationDTO {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getDateOfBirth() {
-        return dateOfBirth;
+    public  LocalDateTime getbirthdate() {
+        return birthdate;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public void setbirthdate( LocalDateTime birthdate) {
+        this.birthdate = birthdate;
     }
 }

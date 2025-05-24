@@ -1,9 +1,12 @@
 package com.nour.demo.repository;
-import com.nour.demo.dto.ReviewDTO;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import com.nour.demo.dto.ReviewDTO;
 
 @Repository
 public class ReviewRepository {
@@ -33,5 +36,17 @@ public class ReviewRepository {
         String sql = "SELECT COUNT(*) FROM courses WHERE id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, courseId);
         return count != null && count > 0;
+    }
+
+    
+    public Double getAverageRating() {
+        String sql = "SELECT AVG(rating) FROM reviews";
+        return jdbcTemplate.queryForObject(sql, Double.class);
+    }
+
+    public long count() {
+        String sql = "SELECT COUNT(*) FROM reviews";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class);
+        return count != null ? count : 0;
     }
 }

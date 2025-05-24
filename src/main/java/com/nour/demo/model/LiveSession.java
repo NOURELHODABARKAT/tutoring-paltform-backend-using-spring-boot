@@ -1,46 +1,66 @@
 package com.nour.demo.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.Builder;
 
+import com.nour.demo.model.User.User;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+@Getter
+@Setter
+@NoArgsConstructor 
+// Required for Hibernate
+@AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "live_sessions")
 public class LiveSession {
-
-    // No explicit no-argument constructor is needed as @Builder will handle object creation.
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
-    
     private String description;
-    
     private LocalDateTime startTime;
-    
     private Integer durationInMinutes;
-    
     private Integer availableSeats;
-    
     private String meetingLink;
+
     @ManyToOne
-    @JoinColumn(name = "tutor_id")
-    private User tutor; 
+    @JoinColumn(name = "user_id")
+    private User tutor;
+
     @ManyToOne
     @JoinColumn(name = "course_id")
-    private courese course; 
+    private Cours course;
+
     @ManyToMany
-    @JoinTable(
-        name = "live_session_students",
-        joinColumns = @JoinColumn(name = "session_id"),
-        inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
+    @JoinTable(name = "live_session_students", 
+               joinColumns = @JoinColumn(name = "session_id"), 
+               inverseJoinColumns = @JoinColumn(name = "student_id"))
     @Builder.Default
-    private final Set<User> enrolledStudents = new HashSet<>();
+    private Set<User> enrolledStudents = new HashSet<>(); // Removed final
+
+    @Column(name = "is_free")
+    @Builder.Default
+    private boolean isFree = false; // Removed final
+
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -105,11 +125,11 @@ public class LiveSession {
         this.tutor = tutor;
     }
 
-    public courese getCourse() {
+    public Cours getCourse() {
         return course;
     }
 
-    public void setCourse(courese course) {
+    public void setCourse(Cours course) {
         this.course = course;
     }
 
@@ -117,5 +137,7 @@ public class LiveSession {
         return enrolledStudents;
     }
 
-    // Removed the setter for enrolledStudents as the field is final and cannot be reassigned.
+    public boolean isFree() {
+        return isFree;
+    }
 }

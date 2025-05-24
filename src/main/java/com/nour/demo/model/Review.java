@@ -2,6 +2,8 @@ package com.nour.demo.model;
 
 import java.time.LocalDateTime;
 
+import com.nour.demo.model.User.User;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,7 +28,7 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
-    private courese courese;
+    private Cours courese;
 
     @Column(nullable = false)
     private int rating;
@@ -43,7 +45,7 @@ public class Review {
     }
 
    
-    public Review(User user, courese courese, int rating, String comment) {
+    public Review(User user, Cours courese, int rating, String comment) {
         this.user = user;
         this.courese = courese;
         if (rating < 1 || rating > 5) {
@@ -71,11 +73,11 @@ public class Review {
         this.user = user;
     }
 
-    public courese getCourese() {
+    public Cours getCourese() {
         return courese;
     }
 
-    public void setCourese(courese courese) {
+    public void setCourese(Cours courese) {
         this.courese = courese;
     }
 

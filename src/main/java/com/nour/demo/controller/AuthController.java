@@ -1,85 +1,82 @@
 package com.nour.demo.controller;
 
-import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nour.demo.dto.LoginDTO;
-import com.nour.demo.dto.SignupDTO;
-import com.nour.demo.model.User;
-import com.nour.demo.model.User.Status;
-import com.nour.demo.repository.UserRepository;
-import com.nour.demo.security.JwtToken;
+import com.nour.demo.dto.AuthDto.AuthRequest;
+import com.nour.demo.dto.AuthDto.AuthResponse;
+import com.nour.demo.dto.AuthDto.RegisterRequest;
+import com.nour.demo.model.User.Role;
+import com.nour.demo.model.User.User;
+import com.nour.demo.security.JwtUtil;
+import com.nour.demo.service.UserService;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtToken jwtTokenProvider;
+    @Autowired
+    private UserService userService;
 
-    public AuthController(AuthenticationManager authenticationManager,
-                          UserRepository userRepository,
-                          PasswordEncoder passwordEncoder,
-                          JwtToken jwtTokenProvider) {
-        this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
-
-    @PostMapping("/signup")
-    public ResponseEntity<String> register(@Valid @RequestBody SignupDTO signupDTO) {
-        if (userRepository.existsByEmail(signupDTO.getEmail())) {
-            return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body("Email already exists");
-        }
-
-        User user = new User();
-        user.setEmail(signupDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(signupDTO.getPassword()));
-        user.setStatus(Status.INACTIVE);
-
-        userRepository.save(user);
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body("User registered successfully!");
-    }
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginDTO dto) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    dto.getEmail(),
-                    dto.getPassword()
-                )
-            );
+    public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
+        // Authenticate user
+        boolean isAuthenticated = userService.authenticate(authRequest.getEmail(), authRequest.getPassword());
 
-            String token = jwtTokenProvider.generateToken(authentication);
-            return ResponseEntity.ok("Bearer " + token);
+        if (isAuthenticated) {
+            // Generate JWT token
+            Map<String, Object> claims = new HashMap<>();
+            Optional<User> userOpt = userService.findByEmail(authRequest.getEmail());
 
-        } catch (BadCredentialsException ex) {
-            return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body("Invalid email or password");
-        } catch (Exception ex) {
-            return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Authentication error: " + ex.getMessage());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                claims.put("role", user.getRole());
+                claims.put("email", user.getEmail());
+
+                String token = jwtUtil.generateToken(user.getEmail(), claims);
+                return ResponseEntity.ok(new AuthResponse(token, user.getEmail()));
+            }
         }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest, Role Rolee) {
+        // Check if username already exists
+        Optional<User> existingUser = userService.findByEmail(registerRequest.getEmail());
+        if (existingUser.isPresent()) {
+            return ResponseEntity.badRequest().body("Email already exists");
+        }
+
+        // Create new user
+        User user = new User();
+        // Encrypt password with BCrypt before saving
+        String hashedPassword = org.mindrot.jbcrypt.BCrypt.hashpw(registerRequest.getPassword(),
+                org.mindrot.jbcrypt.BCrypt.gensalt());
+        user.setPassword(hashedPassword);
+        user.setEmail(registerRequest.getEmail());
+        user.setRole(Rolee); // Default role
+
+        User savedUser = userService.saveUser(user);
+
+        // Generate JWT token
+        String token = jwtUtil.generateToken(savedUser.getEmail());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new AuthResponse(token, savedUser.getEmail()));
     }
 }
 // Compare this snippet from src/main/java/com/nour/demo/dto/LoginDTO.java:

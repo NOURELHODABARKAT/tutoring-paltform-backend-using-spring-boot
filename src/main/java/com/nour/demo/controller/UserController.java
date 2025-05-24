@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.nour.demo.dto.ProfileCompletionDTO;
 import com.nour.demo.dto.UserRegistrationDTO;
-import com.nour.demo.model.User;
+import com.nour.demo.model.User.User;
 import com.nour.demo.service.UserService;
 
 @RestController
