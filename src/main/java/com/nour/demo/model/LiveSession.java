@@ -21,11 +21,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Getter
 @Setter
-@NoArgsConstructor 
-// Required for Hibernate
-@AllArgsConstructor
+@NoArgsConstructor // Required for Hibernate
+@AllArgsConstructor // Add this for builder/all-args
 @Builder
 @Entity
 @Table(name = "live_sessions")
@@ -54,90 +54,9 @@ public class LiveSession {
                joinColumns = @JoinColumn(name = "session_id"), 
                inverseJoinColumns = @JoinColumn(name = "student_id"))
     @Builder.Default
-    private Set<User> enrolledStudents = new HashSet<>(); // Removed final
+    private Set<User> enrolledStudents = new HashSet<>();
 
     @Column(name = "is_free")
     @Builder.Default
-    private boolean isFree = false; // Removed final
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public Integer getDurationInMinutes() {
-        return durationInMinutes;
-    }
-
-    public void setDurationInMinutes(Integer durationInMinutes) {
-        this.durationInMinutes = durationInMinutes;
-    }
-
-    public Integer getAvailableSeats() {
-        return availableSeats;
-    }
-
-    public void setAvailableSeats(Integer availableSeats) {
-        this.availableSeats = availableSeats;
-    }
-
-    public String getMeetingLink() {
-        return meetingLink;
-    }
-
-    public void setMeetingLink(String meetingLink) {
-        this.meetingLink = meetingLink;
-    }
-
-    public User getTutor() {
-        return tutor;
-    }
-
-    public void setTutor(User tutor) {
-        this.tutor = tutor;
-    }
-
-    public Cours getCourse() {
-        return course;
-    }
-
-    public void setCourse(Cours course) {
-        this.course = course;
-    }
-
-    public Set<User> getEnrolledStudents() {
-        return enrolledStudents;
-    }
-
-    public boolean isFree() {
-        return isFree;
-    }
+    private boolean isFree = false;
 }

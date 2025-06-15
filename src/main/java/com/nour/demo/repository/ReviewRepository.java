@@ -33,10 +33,10 @@ public class ReviewRepository {
     }
 
     public boolean courseExists(Integer courseId) {
-        String sql = "SELECT COUNT(*) FROM courses WHERE id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, courseId);
-        return count != null && count > 0;
-    }
+    String sql = "SELECT COUNT(*) FROM courses WHERE course_id = ?";
+    Integer count = jdbcTemplate.queryForObject(sql, Integer.class, courseId);
+    return count != null && count > 0;
+}
 
     
     public Double getAverageRating() {

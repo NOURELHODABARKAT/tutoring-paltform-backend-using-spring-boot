@@ -8,7 +8,10 @@ import com.nour.demo.model.User.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import lombok.Setter;
+import lombok.Getter;
+@Getter
+@Setter
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,7 +23,7 @@ public class ProfileCompletionDTO {
     private Role roles;
     private String bio;
     private String profilePicture;
-
+    private String wilaya;
     // // Getters and Setters
 
     // public String getFirstName() {

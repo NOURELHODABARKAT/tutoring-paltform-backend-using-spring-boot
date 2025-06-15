@@ -1,14 +1,19 @@
 package com.nour.demo.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.nour.demo.dto.LiveSessionCreationDTO;
 import com.nour.demo.dto.LiveSessionResponseDTO;
-import com.nour.demo.dto.StudentDashboardDTO;
-import com.nour.demo.dto.LiveSessionForStudentDTO;
-import com.nour.demo.service.LiveSessionService;
 import com.nour.demo.service.LiveSessionAccessService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import com.nour.demo.service.LiveSessionService;
 
 @RestController
 @RequestMapping("/api/sessions")
@@ -22,6 +27,10 @@ public class LiveSessionController {
         this.liveSessionService = liveSessionService;
         this.liveSessionAccessService = liveSessionAccessService;
     }
+@PostMapping
+public ResponseEntity<LiveSessionResponseDTO> createSession(@RequestBody LiveSessionCreationDTO dto) {
+    return liveSessionService.createLiveSession(dto);
+}
 
     // @PostMapping
     // @PreAuthorize("hasRole('TUTOR')")

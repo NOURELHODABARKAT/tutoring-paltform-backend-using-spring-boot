@@ -43,15 +43,16 @@ public class CourseControlle {
     }
 
     @PutMapping("/{id}/edit")
-    public ResponseEntity<String> updateCourse(@PathVariable Long id, @RequestBody CourseDTO courseDTO) {
-        return courseRepository.findById(id).map(course -> {
-            course.setTitle(courseDTO.getTitle());
-            course.setDescription(courseDTO.getDescription());
-            course.setPrice(courseDTO.getPrice());
-            courseRepository.save(course);
-            return new ResponseEntity<>("Course updated", HttpStatus.OK);
-        }).orElseGet(() -> new ResponseEntity<>("Course not found", HttpStatus.NOT_FOUND));
-    }
+public ResponseEntity<?> updateCourse(@PathVariable Long id, @RequestBody CourseDTO courseDTO) {
+    return courseRepository.findById(id).map(course -> {
+        course.setTitle(courseDTO.getTitle());
+        course.setDescription(courseDTO.getDescription());
+        course.setPrice(courseDTO.getPrice());
+        courseRepository.save(course);
+        return ResponseEntity.ok("Course updated successfully");
+    }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found"));
+}
+
 
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<String> deleteCourse(@PathVariable Long id) {
@@ -61,49 +62,43 @@ public class CourseControlle {
         }).orElseGet(() -> new ResponseEntity<>("Course not found", HttpStatus.NOT_FOUND));
     }
 
-    // @PreAuthorize("hasRole('STUDENT')")
-    // @PostMapping("/{courseId}/enroll/{studentId}")
-    // public ResponseEntity<String> enrollStudent(@PathVariable Long courseId, @PathVariable Long studentId) {
-    //     EnrollmentDTO enrollmentDTO = new EnrollmentDTO();
-    //     enrollmentDTO.setCourseId(courseId);
-    //     enrollmentDTO.setStudentId(studentId);
-    //     return courseService.enrollStudent(enrollmentDTO);
-    // }
-
-    // @PreAuthorize("hasRole('STUDENT')")
-    // @GetMapping("/my-courses/{studentId}")
-    // public ResponseEntity<List<Cours>> getMyCourses(@PathVariable Long studentId) {
-    //     List<Cours> courses = courseService.getCoursesByStudentId(studentId);
-    //     return ResponseEntity.ok(courses);
-    // }
+    @PostMapping("/{courseId}/enroll/{studentId}")
+    public ResponseEntity<String> enrollStudent(@PathVariable Long courseId, @PathVariable Long studentId) {
+        EnrollmentDTO enrollmentDTO = new EnrollmentDTO();
+        enrollmentDTO.setCourseId(courseId);
+        enrollmentDTO.setStudentId(studentId);
+        return courseService.enrollStudent(enrollmentDTO);
+    }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Cours>> searchCourses(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String tutorName,
-            @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String subjectStartsWith,
-            @RequestParam(required = false) Integer duration) {
-        List<Cours> courses = courseService.searchCourses(
-                title,
-                minPrice,
-                maxPrice,
-                category,
-                subjectStartsWith,
-                duration);
-
-        if (courses.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(List.of());
-        }
-
-        return ResponseEntity.ok(courses);
+public ResponseEntity<List<Cours>> searchCourses(
+    @RequestParam(required = false) String title,
+    @RequestParam(required = false) String tutorName,
+    @RequestParam(required = false) Double minPrice,
+    @RequestParam(required = false) Double maxPrice,
+    @RequestParam(required = false) String category,
+    @RequestParam(required = false) Integer duration) {
+    List<Cours> courses = courseService.searchCourses(
+        title,
+        tutorName,
+        minPrice,
+        maxPrice,
+        category,
+        duration
+    );
+    if (courses.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(List.of());
     }
- @GetMapping("/student/{studentId}")
+    return ResponseEntity.ok(courses);
+}
+
+    @GetMapping("/student/{studentId}")
     public List<Cours> getCoursesByStudent(@PathVariable Long studentId) {
         return courseService.getCoursesByStudentId(studentId);
     }
+    @GetMapping("/api/courses")
+public ResponseEntity<List<Cours>> getAllCourses() {
+    return ResponseEntity.ok(courseRepository.findAll());
+}
+
 }
